@@ -1,0 +1,38 @@
+const SHELL = 'sound-house-shell-v2.3';
+const MEDIA = 'sound-house-media-v1';
+const FILES = ['./','index.html','immersive.css','immersive-app.js','data.js','mixer.js','storage.js','offline.js','scene-view.js','scene-motion.js','install.js','icons.js','manifest.webmanifest','assets/icon.svg','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/icon-maskable.png','assets/media-manifest.json','素材与授权.md'];
+const scopeURL = path => new URL(path,self.registration.scope).href;
+self.addEventListener('install',event=>event.waitUntil((async()=>{
+  const cache=await caches.open(SHELL);
+  await cache.addAll(FILES.map(path=>new Request(scopeURL(path),{cache:'reload'})));
+  // Media cache is stable across updates. Only changed media revisions are invalidated.
+  const oldCaches=(await caches.keys()).filter(k=>k.startsWith('sound-house-shell-')&&k!==SHELL);
+  const next=await (await cache.match(scopeURL('assets/media-manifest.json'))).json();let previous=null;
+  for(const name of oldCaches){const response=await(await caches.open(name)).match(scopeURL('assets/media-manifest.json'));if(response){previous=await response.json();break;}}
+  if(previous){const old=new Map(previous.files.map(f=>[f.url,f.sha256])),media=await caches.open(MEDIA);for(const file of next.files)if(old.has(file.url)&&old.get(file.url)!==file.sha256)await media.delete(scopeURL(file.url));}
+  await self.skipWaiting();
+})()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('sound-house-shell-')&&key!==SHELL)await caches.delete(key);await self.clients.claim();})()));
+async function rangeResponse(request,response){
+ const range=request.headers.get('Range');if(!range)return response;
+ const bytes=await response.arrayBuffer(),size=bytes.byteLength,match=/^bytes=(\d*)-(\d*)$/.exec(range);
+ const invalid=()=>new Response(null,{status:416,headers:{'Content-Range':`bytes */${size}`}});
+ if(!match||!match[1]&&!match[2])return invalid();
+ let start=match[1]?Number(match[1]):Math.max(0,size-Number(match[2])),end=match[1]?(match[2]?Math.min(Number(match[2]),size-1):size-1):size-1;
+ if(start>end||start>=size||!Number.isSafeInteger(start)||!Number.isSafeInteger(end))return invalid();
+ const headers=new Headers(response.headers);headers.set('Content-Range',`bytes ${start}-${end}/${size}`);headers.set('Content-Length',String(end-start+1));headers.set('Accept-Ranges','bytes');
+ return new Response(bytes.slice(start,end+1),{status:206,headers});
+}
+self.addEventListener('fetch',event=>{
+ const request=event.request,url=new URL(request.url);if(request.method!=='GET'||url.origin!==self.location.origin)return;
+ event.respondWith((async()=>{
+  const isMedia=/\/assets\/(images|sounds)\//.test(url.pathname),cache=await caches.open(isMedia?MEDIA:SHELL);
+  if(request.mode==='navigate'){
+   const cached=await cache.match(request,{ignoreSearch:true});if(cached)return cached;
+   const home=await cache.match(scopeURL('./'));if(home)return home;
+  }
+  const cached=await cache.match(request);if(cached)return isMedia?rangeResponse(request,cached):cached;
+  try{const response=await fetch(request);if(response.ok&&response.status===200)event.waitUntil(cache.put(request,response.clone()).catch(()=>{}));return response;}
+  catch{return new Response('这个素材尚未离线保存，请联网后再试。',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});}
+ })());
+});

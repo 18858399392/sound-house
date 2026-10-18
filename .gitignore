@@ -1,0 +1,10 @@
+dist/
+node_modules/
+.wrangler/
+.env
+.env.*
+*.log
+# Previous implementation is retained locally, excluded from the maintained app.
+app.js
+audio.js
+styles.css

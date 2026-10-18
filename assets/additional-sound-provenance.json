@@ -1,0 +1,38 @@
+[
+  {
+    "id": "cicadas",
+    "name": "夏日蝉鸣",
+    "author": "dethrok",
+    "source": "https://freesound.org/people/dethrok/sounds/272169/",
+    "download": "https://cdn.freesound.org/previews/272/272169_3186672-hq.mp3",
+    "license": "CC0 1.0",
+    "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "bytes": 1109642,
+    "sha256": "37392db070734b431000e90cf1edcccfba35746888ebbe824ac3573f403f464f",
+    "note": "Freesound HQ preview; cicadas recorded in Italy and bamboo in Reunion, not claimed as Chinese field recordings."
+  },
+  {
+    "id": "tea-cup",
+    "name": "茶杯轻落",
+    "author": "TheHiraHira",
+    "source": "https://freesound.org/people/TheHiraHira/sounds/460242/",
+    "download": "https://cdn.freesound.org/previews/460/460242_9117851-hq.mp3",
+    "license": "CC0 1.0",
+    "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "bytes": 119291,
+    "sha256": "6d6c7e0432895fd83f1b4a5198d9bc168a7541dc1a3c987610be15a39434e4ce",
+    "note": "Freesound HQ preview; cicadas recorded in Italy and bamboo in Reunion, not claimed as Chinese field recordings."
+  },
+  {
+    "id": "bamboo",
+    "name": "竹林风声",
+    "author": "nyoz",
+    "source": "https://freesound.org/people/nyoz/sounds/615748/",
+    "download": "https://cdn.freesound.org/previews/615/615748_2355118-hq.mp3",
+    "license": "CC0 1.0",
+    "licenseURL": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "bytes": 5573136,
+    "sha256": "9989e48cb79de76818c961e8c92f23b6305a2d39abe0cfd25ecde03f85bdb401",
+    "note": "Freesound HQ preview; cicadas recorded in Italy and bamboo in Reunion, not claimed as Chinese field recordings."
+  }
+]
