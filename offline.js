@@ -55,7 +55,7 @@ class OfflineMedia extends EventTarget {
         try {
           const response = await fetch(key, {
             headers: { 'X-Sound-House-Media': '1', Range: `bytes=${start}-${end}` },
-            cache: 'no-store', signal: AbortSignal.timeout(attempt ? 60000 : 30000),
+            cache: 'no-store', signal: AbortSignal.timeout(attempt ? 120000 : 60000),
           });
           const bytes = await response.arrayBuffer();
           if (start === 0 && response.status === 200 && bytes.byteLength === total) return { bytes, headers: response.headers, full: true };
@@ -66,7 +66,8 @@ class OfflineMedia extends EventTarget {
     };
     // Bounded ranges avoid a stalled long-lived response in some mobile webviews.
     // Cache Storage still receives one complete, hash-verified movie, never fragments.
-    const first = await read(0), headers = new Headers(first.headers);
+    const started = performance.now(), first = await read(0), headers = new Headers(first.headers);
+    const concurrency = performance.now() - started > 4000 ? 1 : 3;
     headers.delete('Content-Range'); headers.delete('Content-Encoding'); headers.set('Content-Length', String(total));
     if (first.full) return new Response(first.bytes, { headers });
     const bytes = new Uint8Array(total); bytes.set(new Uint8Array(first.bytes));
@@ -77,7 +78,9 @@ class OfflineMedia extends EventTarget {
         const part = await read(start); bytes.set(new Uint8Array(part.bytes), start);
       }
     };
-    await Promise.all([worker(), worker(), worker()]);
+    // Slow connections benefit from a single request rather than three streams
+    // competing for a small bandwidth budget and timing out together.
+    await Promise.all(Array.from({ length: concurrency }, worker));
     return new Response(bytes, { headers });
   }
   async load(key, force) {

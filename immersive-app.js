@@ -258,6 +258,7 @@ if(!importShare())void sceneView.show(currentScene,true);
 if('mediaSession'in navigator)for(const[action,handler]of[['play',()=>void safePlay()],['pause',()=>mixer.pause()],['stop',()=>mixer.pause()]])try{navigator.mediaSession.setActionHandler(action,handler);}catch{}
 if('serviceWorker'in navigator&&window.isSecureContext)navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).catch(()=>toast('离线功能暂未启用，联网后重新打开可以再试。'));
 void refreshInventory();
-window.soundHouse={version:'2.5.3',mixer,media,installer,get scene(){return currentScene;},get timer(){return timer;},get motion(){return sceneView.motion;},get film(){return sceneView.film;},tickTimer,selectScene};
+window.soundHouse={version:'2.5.4',mixer,media,installer,get scene(){return currentScene;},get timer(){return timer;},get motion(){return sceneView.motion;},get film(){return sceneView.film;},tickTimer,selectScene};
+
 
 
