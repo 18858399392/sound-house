@@ -1,4 +1,4 @@
-const SHELL = 'sound-house-shell-v2.4';
+const SHELL = 'sound-house-shell-v2.4.1';
 const MEDIA = 'sound-house-media-v1';
 const FILES = ['./','index.html','immersive.css','immersive-app.js','data.js','mixer.js','storage.js','offline.js','media-index.js','scene-view.js','scene-motion.js','install.js','icons.js','manifest.webmanifest','assets/icon.svg','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/icon-maskable.png','assets/media-manifest.json','素材与授权.md'];
 const scopeURL = path => new URL(path,self.registration.scope).href;

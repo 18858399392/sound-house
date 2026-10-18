@@ -152,44 +152,50 @@ export class SceneMotion {
     }
     for(let i=0;i<13;i++) {const y=.57+i*.033;c.fillStyle=`rgba(255,184,77,${.035+.035*Math.sin(t*2.4+i*1.9)})`;c.fillRect((.47+Math.sin(i*4)*.02)*W,y*H,(.03+i*.001)*W,2+Math.sin(t+i));}c.restore();
   }
-  water(c,t,points,top,bottom,amplitude,speed=1) {
+  water(c,t,points,top,bottom,amplitude,speed=1,opacity=.7,vertical=1.1) {
     if(!this.image?.complete) return;
     c.save();polygon(c,points);c.clip();
     const start=top*H,end=bottom*H;
     for(let y=start;y<end;y+=5) {
       const envelope=Math.min(1,(y-start)/25,(end-y)/25),dx=Math.sin(y*.045-t*speed)*amplitude*envelope;
-      c.globalAlpha=.7*envelope;
-      c.drawImage(this.image,0,y,W,5,dx,y+Math.sin(t*speed+y*.025)*1.1*envelope,W,5.5);
+      c.globalAlpha=opacity*envelope;
+      c.drawImage(this.image,0,y,W,5,dx,y+Math.sin(t*speed+y*.025)*vertical*envelope,W,5.5);
     }
     c.restore();
   }
   forest(c,t) {
-    this.water(c,t,[[.5,.5],[.59,.51],[.62,.61],[.71,.67],[.94,.83],[.96,1],[.17,1],[.47,.72],[.43,.62]],.51,1,3.7,2.7);
-    // Falling water is localized to the actual waterfall.
-    c.save();polygon(c,[[.49,.37],[.595,.375],[.582,.508],[.483,.52]]);c.clip();
-    for(let i=0;i<26;i++){const p=fract(t*.42+seed(i+2));c.strokeStyle=`rgba(239,252,243,${.08+seed(i+31)*.1})`;c.lineWidth=1+seed(i+8)*3;c.beginPath();c.moveTo((.49+seed(i+13)*.1)*W,(.37+p*.15)*H);c.lineTo((.488+seed(i+13)*.1)*W,(.385+p*.15)*H);c.stroke();}c.restore();
-    this.fog(c,t,.54,.53,.3,.09);this.dust(c,t,38,[.25,.12,.78,.66],'244,244,185');
-    this.halo(c,.43,.24,.26,.28,'245,232,151',.035+Math.sin(t*.3)*.018);
+    if(!this.image?.complete) return;
+    // Only the two photographed falling-water columns move. The forest,
+    // sunlight, pool, foreground stream and rocks remain completely still.
+    c.save();
+    const side=new Path2D();side.moveTo(.575*W,.376*H);side.lineTo(.585*W,.373*H);side.lineTo(.579*W,.496*H);side.lineTo(.569*W,.502*H);side.closePath();
+    // Clip both paths together using one Path2D to keep the gap/cliff static.
+    const main=new Path2D();
+    [[.502,.382],[.551,.381],[.549,.417],[.542,.461],[.539,.503],[.49,.503],[.493,.458],[.492,.422]].forEach(([x,y],i)=>main[i?'lineTo':'moveTo'](x*W,y*H));main.closePath();main.addPath(side);c.clip(main);
+    for(let pass=0;pass<2;pass++) {
+      const phase=fract(t*.65+pass*.5),shift=phase*15,blend=Math.sin(phase*Math.PI)**2;
+      for(let y=.377*H;y<.504*H;y+=3) {
+        const edge=Math.max(0,Math.min(1,(y-.377*H)/14,(.504*H-y)/14));
+        c.globalAlpha=.48*blend*edge;
+        c.drawImage(this.image,.48*W,y-shift,.115*W,3,.48*W,y,.115*W,3);
+      }
+    }
+    c.restore();
   }
   sea(c,t) {
-    this.water(c,t,[[0,.43],[1,.41],[1,.83],[.53,.99],[.02,.85]],.43,.98,5.4,1.4);
-    c.save();polygon(c,[[0,.45],[1,.43],[1,.8],[.45,.94],[0,.85]]);c.clip();
-    for(let j=0;j<7;j++) {
-      const phase=fract(t*.055+j/7),y=.47+phase*.43;
-      c.beginPath();for(let i=0;i<=60;i++){const x=i/60,yy=y+Math.sin(x*12+t*.7+j)*(.002+phase*.009)-x*.06;c[i?'lineTo':'moveTo'](x*W,yy*H);}
-      c.strokeStyle=`rgba(224,240,224,${Math.sin(phase*Math.PI)*.19})`;c.lineWidth=1+phase*3;c.stroke();
-    }
-    for(let i=0;i<45;i++){const y=.47+seed(i+7)*.25,x=.64+(seed(i+52)-.5)*(.015+(y-.47)*.32),a=Math.max(0,Math.sin(t*1.4+i*2.7))*.35;c.fillStyle=`rgba(255,191,105,${a})`;c.fillRect(x*W,y*H,4+seed(i+2)*18,1.3);}c.restore();
+    // A restrained shimmer of the existing water texture, with no painted
+    // wave stripes or flashing rectangles. Horizon, boat and sand stay fixed.
+    this.water(c,t,[[0,.448],[1,.448],[1,.56],[.65,.645],[.3,.72],[0,.775]],.448,.775,.55,.38,.22,.16);
   }
   fire(c,t) {
-    const flicker=.5+Math.sin(t*6.3)*.16+Math.sin(t*11.1)*.08;
-    this.halo(c,.535,.747,.19,.24,'255,105,20',.1+flicker*.11);
-    this.water(c,t,[[.445,.78],[.475,.665],[.5,.72],[.52,.605],[.55,.7],[.585,.75],[.59,.82],[.45,.83]],.605,.83,4,5.7);
-    for(let i=0;i<43;i++) {
-      const p=fract(t*(.14+seed(i+61)*.13)+seed(i+80));
-      const x=(.5+(seed(i+30)-.5)*.08)*W+Math.sin(p*8+i)*p*70,y=(.79-p*.37)*H;
-      const a=Math.sin(p*Math.PI)*(.45+seed(i+11)*.4),r=(1-p)*2.1+.4;
-      c.strokeStyle=`rgba(255,${150+Math.round(seed(i+3)*70)},75,${a})`;c.lineWidth=r;c.beginPath();c.moveTo(x,y);c.lineTo(x+Math.sin(i)*2,y+3+p*5);c.stroke();
+    // Keep the real flame silhouette intact; just a little local warmth and
+    // three faint embers instead of warping the photograph or filling the sky.
+    this.halo(c,.555,.738,.09,.13,'255,113,32',.021+Math.sin(t*1.15)*.004+Math.sin(t*1.83)*.002);
+    for(let i=0;i<3;i++) {
+      const p=fract(t*(.07+seed(i+61)*.02)+seed(i+80));
+      const x=(.556+(seed(i+30)-.5)*.025)*W+Math.sin(p*4+i)*p*5,y=(.733-p*.085)*H;
+      const a=Math.sin(p*Math.PI)*.16,r=.65*(1-p)+.25;
+      c.fillStyle=`rgba(255,190,101,${a})`;c.beginPath();c.ellipse(x,y,r,r*1.2,0,0,TAU);c.fill();
     }
   }
   train(c,t) {
