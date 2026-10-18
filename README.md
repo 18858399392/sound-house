@@ -72,4 +72,6 @@ npx wrangler pages deploy dist --project-name shengyin --branch main --force
 
 `dist/` 是白名单构建的发布目录，仅含现用页面、模块、图标、音频、画面与授权说明。Cloudflare Pages 使用直接上传；推送 GitHub 不会自动部署，修改后重新执行上述命令。
 
+正式子域名使用 Cloudflare 管理的 Custom Domain DNS/TLS，由 `deploy/domain-proxy.js` 将请求流式转发到 Pages。页面、声音与画面仍在 `shengyin-72d.pages.dev`；无需把素材再存一份，也保留原始缓存与音频 Range 响应。日常更新只需发布 Pages；仅修改域名入口时执行 `npx wrangler deploy --config deploy/wrangler.jsonc`。入口使用 Workers 请求配额。
+
 代码遵循 MIT，保留 `LICENSE-Moodist` 上游声明。声音素材与代码采用不同许可，具体来源及上游逐文件授权映射缺失情况见[素材与授权](素材与授权.md)。请勿把集成音频当作 MIT 素材包再分发。
