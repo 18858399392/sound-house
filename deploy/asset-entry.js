@@ -1,15 +1,18 @@
 // Native static assets: no external origin hop. Preserve byte-range playback.
+import { mediaFiles } from '../media-index.js';
+const sizes = new Map(mediaFiles.map(file => ['/' + file.url, file.bytes]));
 export default {
   async fetch(request, env) {
     if(!['GET','HEAD'].includes(request.method)) return new Response('Method not allowed',{status:405,headers:{Allow:'GET, HEAD'}});
     const range=request.headers.get('Range');
     try {
       // Fetch from the in-process static-asset binding.
-      const response=await env.ASSETS.fetch(request);
+      const headers=new Headers(request.headers);if(range)headers.set('Accept-Encoding','identity');
+      const response=await env.ASSETS.fetch(new Request(request,{headers}));
       // Static Assets can ignore Range. Slice
       // the stream ourselves without buffering a full recording in memory.
       if(!range||response.status!==200||request.headers.has('If-Range')||response.headers.has('Content-Encoding'))return response;
-      const size=Number(response.headers.get('Content-Length'));
+      const size=Number(response.headers.get('Content-Length'))||sizes.get(new URL(request.url).pathname);
       if(!Number.isSafeInteger(size)||size<=0)return response;
       const match=/^bytes=(\d*)-(\d*)$/.exec(range);
       const start=match?.[1]?Number(match[1]):Math.max(0,size-Number(match?.[2]));
