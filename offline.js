@@ -45,6 +45,41 @@ class OfflineMedia extends EventTarget {
     this.writes.set(key, job);
     job.finally(() => { if (this.writes.get(key) === job) this.writes.delete(key); });
   }
+  async videoResponse(key) {
+    const total = index.get(key)?.bytes;
+    if (!total) return fetch(key, { cache: 'no-store', signal: AbortSignal.timeout(60000) });
+    const chunkSize = 262144;
+    const read = async start => {
+      const end = Math.min(total - 1, start + chunkSize - 1);
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const response = await fetch(key, {
+            headers: { 'X-Sound-House-Media': '1', Range: `bytes=${start}-${end}` },
+            cache: 'no-store', signal: AbortSignal.timeout(attempt ? 60000 : 30000),
+          });
+          const bytes = await response.arrayBuffer();
+          if (start === 0 && response.status === 200 && bytes.byteLength === total) return { bytes, headers: response.headers, full: true };
+          if (response.status !== 206 || response.headers.get('Content-Range') !== `bytes ${start}-${end}/${total}` || bytes.byteLength !== end - start + 1) throw new Error('视频分段下载不完整');
+          return { bytes, headers: response.headers };
+        } catch (error) { if (attempt || navigator.onLine === false) throw error; }
+      }
+    };
+    // Bounded ranges avoid a stalled long-lived response in some mobile webviews.
+    // Cache Storage still receives one complete, hash-verified movie, never fragments.
+    const first = await read(0), headers = new Headers(first.headers);
+    headers.delete('Content-Range'); headers.delete('Content-Encoding'); headers.set('Content-Length', String(total));
+    if (first.full) return new Response(first.bytes, { headers });
+    const bytes = new Uint8Array(total); bytes.set(new Uint8Array(first.bytes));
+    let next = chunkSize;
+    const worker = async () => {
+      while (next < total) {
+        const start = next; next += chunkSize;
+        const part = await read(start); bytes.set(new Uint8Array(part.bytes), start);
+      }
+    };
+    await Promise.all([worker(), worker(), worker()]);
+    return new Response(bytes, { headers });
+  }
   async load(key, force) {
     const video = /\/assets\/videos\//.test(key);
     if (!force && canCache()) {
@@ -62,11 +97,11 @@ class OfflineMedia extends EventTarget {
     let lastError;
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        const response = await fetch(key, {
+        const response = video ? await this.videoResponse(key) : await fetch(key, {
           headers: { 'X-Sound-House-Media': '1' },
           cache: force || attempt ? 'reload' : 'default',
-          priority: video ? 'low' : 'high',
-          signal: AbortSignal.timeout(video ? (attempt ? 120000 : 60000) : (attempt ? 40000 : 18000)),
+          priority: 'high',
+          signal: AbortSignal.timeout(attempt ? 40000 : 18000),
         });
         const bytes = await response.arrayBuffer();
         if (!await this.valid(key, response, bytes)) throw new Error('素材下载不完整');
@@ -137,3 +172,4 @@ class OfflineMedia extends EventTarget {
   }
 }
 export const media = new OfflineMedia();
+

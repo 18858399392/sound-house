@@ -1,10 +1,21 @@
-const SHELL = 'sound-house-shell-v2.5.0';
+const SHELL = 'sound-house-shell-v2.5.3';
 const MEDIA = 'sound-house-media-v1';
 const FILES = ['./','index.html','immersive.css','immersive-app.js','data.js','mixer.js','storage.js','offline.js','media-index.js','scene-view.js','scene-motion.js','scene-film.js','install.js','icons.js','manifest.webmanifest','assets/icon.svg','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/icon-maskable.png','assets/media-manifest.json','素材与授权.md'];
 const scopeURL = path => new URL(path,self.registration.scope).href;
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(SHELL);
-  await cache.addAll(FILES.map(path=>new Request(scopeURL(path),{cache:'reload'})));
+  // Limit parallel shell requests on mobile connections. A failed install keeps
+  // the previous app active; successful files can be reused by the next retry.
+  let nextFile=0;
+  const installFile=async path=>{
+   const url=scopeURL(path);if(await cache.match(url))return;
+   for(let attempt=0;attempt<3;attempt++)try{
+    const response=await fetch(new Request(url,{cache:'reload',signal:AbortSignal.timeout(20000)}));
+    if(!response.ok)throw new Error('App shell download failed');
+    await cache.put(url,response);return;
+   }catch(error){if(attempt===2)throw error;}
+  };
+  await Promise.all(Array.from({length:4},async()=>{while(nextFile<FILES.length)await installFile(FILES[nextFile++]);}));
   // Media cache is stable across updates. Only changed media revisions are invalidated.
   const oldCaches=(await caches.keys()).filter(k=>k.startsWith('sound-house-shell-')&&k!==SHELL);
   const next=await (await cache.match(scopeURL('assets/media-manifest.json'))).json();let previous=null;
@@ -42,3 +53,4 @@ self.addEventListener('fetch',event=>{
   catch{return new Response('连接暂时中断，此素材在本机也没有可用副本。',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});}
  })());
 });
+
