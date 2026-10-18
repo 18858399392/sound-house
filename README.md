@@ -80,6 +80,6 @@ npx wrangler pages deploy dist --project-name shengyin --branch main --force
 
 `dist/` 是白名单构建的发布目录，仅含现用页面、模块、图标、音频、画面与授权说明。Cloudflare Pages 使用直接上传；推送 GitHub 不会自动部署，修改后重新执行上述命令。
 
-正式子域名使用 Cloudflare 管理的 Custom Domain DNS/TLS，直接由 Workers Static Assets 提供 `dist/`，避免声音先经 Worker 再访问 Pages 的额外回源环节。无需调用代理脚本；资源不存在时返回 404，不把 HTML 当成成功的音频响应。备用站点为 `shengyin-72d.pages.dev`。更新时先构建，再发布正式站与备用站；仅推送 GitHub 不会自动更新这两个站点。旧代理源码保留作回滚参考。
+正式子域名使用 Cloudflare 管理的 Custom Domain DNS/TLS，直接由 Workers Static Assets 提供 `dist/`，避免声音先经 Worker 再访问 Pages 的额外回源环节。`deploy/asset-entry.js` 仅为声音补充字节范围响应，通过原生 ASSETS 绑定读取文件，不访问外部回源。资源不存在时返回 404，不把 HTML 当成成功的音频响应。备用站点为 `shengyin-72d.pages.dev`。更新时先构建，再发布正式站与备用站；仅推送 GitHub 不会自动更新这两个站点。旧代理源码保留作回滚参考。
 
 代码遵循 MIT，保留 `LICENSE-Moodist` 上游声明。声音素材与代码采用不同许可，具体来源及上游逐文件授权映射缺失情况见[素材与授权](素材与授权.md)。请勿把集成音频当作 MIT 素材包再分发。
