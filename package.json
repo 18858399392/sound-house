@@ -1,6 +1,6 @@
 {
   "name": "sound-house",
-  "version": "2.5.4",
+  "version": "2.5.5",
   "private": true,
   "type": "module",
   "description": "声音小屋：全屏场景、自然混音与离线安装",
