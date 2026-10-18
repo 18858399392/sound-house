@@ -27,9 +27,16 @@ export class SoundMixer extends EventTarget {
     if (this.buffers.has(id)) { const value = this.buffers.get(id); this.buffers.delete(id); this.buffers.set(id, value); return value; }
     if (this.pending.has(id)) return this.pending.get(id);
     const job = (async () => {
-      const bytes = await (await media.get(soundById.get(id).src)).arrayBuffer();
+      const src = soundById.get(id).src;
+      const bytes = await (await media.get(src)).arrayBuffer();
       const decode = this.decodeQueue.then(async () => {
-        const original = await this.context.decodeAudioData(bytes), config = configForSound(id);
+        let original;
+        try { original = await this.context.decodeAudioData(bytes); }
+        catch {
+          await media.invalidate(src);
+          original = await this.context.decodeAudioData(await (await media.get(src, { force: true })).arrayBuffer());
+        }
+        const config = configForSound(id);
         const frames = Math.min(original.length, Math.floor(original.sampleRate * config.seconds));
         // For separated field takes, choose the most active window rather than a silent lead-in.
         let offset = 0;
@@ -153,6 +160,11 @@ export class SoundMixer extends EventTarget {
   }
   setMaster(value) { this.master = Math.max(0, Math.min(1, value)); if (this.output) this.output.gain.setTargetAtTime(this.master, this.context.currentTime, .08); this.emit(); }
   retry(id) { this.errors.delete(id); if (this.playing) void this.startLayer(id); else this.play().catch(() => this.emit()); }
+  recover() {
+    if (!this.playing) return;
+    if (this.context?.state !== 'running') void this.context?.resume().catch(() => {});
+    for (const id of Object.keys(this.mix)) if (!this.nodes.has(id) && !this.pending.has(id)) this.retry(id);
+  }
   async preview(id) {
     if (this.previewId === id) { this.stopPreview(); return; }
     this.init(); this.stopPreview(); const token = ++this.previewToken;

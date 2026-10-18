@@ -43,9 +43,9 @@ export class SceneView {
       this.blobs.push(blobURL);
       if (this.blobs.length > 2) { const old = this.blobs.shift(); setTimeout(() => URL.revokeObjectURL(old), 1500); }
       return true;
-    } catch {
+    } catch (error) {
       if (blobURL) URL.revokeObjectURL(blobURL);
-      if (token === this.token) this.onError('这个画面还没离线保存，联网后可以再切换。');
+      if (token === this.token) this.onError(error.message || '画面暂时没加载成功，请再试一次。');
       return false;
     }
   }

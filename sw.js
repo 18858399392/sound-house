@@ -1,6 +1,6 @@
-const SHELL = 'sound-house-shell-v2.3';
+const SHELL = 'sound-house-shell-v2.4';
 const MEDIA = 'sound-house-media-v1';
-const FILES = ['./','index.html','immersive.css','immersive-app.js','data.js','mixer.js','storage.js','offline.js','scene-view.js','scene-motion.js','install.js','icons.js','manifest.webmanifest','assets/icon.svg','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/icon-maskable.png','assets/media-manifest.json','素材与授权.md'];
+const FILES = ['./','index.html','immersive.css','immersive-app.js','data.js','mixer.js','storage.js','offline.js','media-index.js','scene-view.js','scene-motion.js','install.js','icons.js','manifest.webmanifest','assets/icon.svg','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/icon-maskable.png','assets/media-manifest.json','素材与授权.md'];
 const scopeURL = path => new URL(path,self.registration.scope).href;
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(SHELL);
@@ -25,14 +25,20 @@ async function rangeResponse(request,response){
 }
 self.addEventListener('fetch',event=>{
  const request=event.request,url=new URL(request.url);if(request.method!=='GET'||url.origin!==self.location.origin)return;
+ // The app validates and persists these buffered downloads. Never cache the
+ // same streaming response in two places or let SW storage block a sound load.
+ if(request.headers.has('X-Sound-House-Media'))return;
  event.respondWith((async()=>{
-  const isMedia=/\/assets\/(images|sounds)\//.test(url.pathname),cache=await caches.open(isMedia?MEDIA:SHELL);
+  const isMedia=/\/assets\/(images|sounds)\//.test(url.pathname);let cache;
+  try{cache=await caches.open(isMedia?MEDIA:SHELL);}catch{}
+  try{
   if(request.mode==='navigate'){
-   const cached=await cache.match(request,{ignoreSearch:true});if(cached)return cached;
-   const home=await cache.match(scopeURL('./'));if(home)return home;
+   const cached=await cache?.match(request,{ignoreSearch:true});if(cached)return cached;
+   const home=await cache?.match(scopeURL('./'));if(home)return home;
   }
-  const cached=await cache.match(request);if(cached)return isMedia?rangeResponse(request,cached):cached;
-  try{const response=await fetch(request);if(response.ok&&response.status===200)event.waitUntil(cache.put(request,response.clone()).catch(()=>{}));return response;}
-  catch{return new Response('这个素材尚未离线保存，请联网后再试。',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});}
+  const cached=await cache?.match(request);if(cached)return isMedia?rangeResponse(request,cached):cached;
+  }catch{}
+  try{const response=await fetch(request);if(cache&&response.ok&&response.status===200&&!/\/assets\/sounds\//.test(url.pathname))event.waitUntil(cache.put(request,response.clone()).catch(()=>{}));return response;}
+  catch{return new Response('连接暂时中断，此素材在本机也没有可用副本。',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});}
  })());
 });

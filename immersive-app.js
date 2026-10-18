@@ -104,16 +104,17 @@ function renderMix() {
     $$(`[data-level-output="${id}"]`).forEach(el=>el.textContent=value+'%');
     const el=$(`[data-layer-status="${id}"]`); if(!el)continue;
     const error=mixer.errors.has(id), accent=configForSound(id).mode==='event';
-    const text=error?'尚未就绪':mixer.loading.includes(id)?'正在准备…':mixer.playing?(accent?'间歇点缀，留一点呼吸':'持续铺底'):accent?'间歇点缀':'等待播放';
+    const text=error?mixer.errors.get(id):mixer.loading.includes(id)?'首次载入中，稍后会自动保存…':mixer.playing?(accent?'间歇点缀，留一点呼吸':'持续铺底'):accent?'间歇点缀':'等待播放';
     el.classList.toggle('error',error); const html=escape(text)+(error?`<button class="retry-button" data-retry="${id}">重试</button>`:'');
     if(el.innerHTML!==html)el.innerHTML=html;
   }
 }
 function updatePlayer() {
   const count=Object.keys(mixer.mix).length, running=mixer.playing && mixer.nodes.size && mixer.context?.state==='running';
-  document.body.classList.toggle('is-playing',!!running); $('#play-button').innerHTML=icon(mixer.playing?'pause':'play'); $('#play-button').setAttribute('aria-label',mixer.playing?'暂停声音':'播放声音');
+  const failed = mixer.playing && !mixer.nodes.size && !mixer.loading.length && mixer.errors.size;
+  document.body.classList.toggle('is-playing',!!running); $('#play-button').innerHTML=icon(mixer.playing&&!failed?'pause':'play'); $('#play-button').setAttribute('aria-label',failed?'重试播放':mixer.playing?'暂停声音':'播放声音');
   $('#mix-count').textContent=count; $('#tab-mix-count').textContent=count;
-  $('#play-state').textContent=mixer.previewId?`单独试听 · ${soundById.get(mixer.previewId).name}`:mixer.loading.length?`正在准备 ${mixer.loading.length} 层声音…`:mixer.errors.size?`${mixer.errors.size} 种声音未就绪，打开声音重试`:running?`${count} 层声音 · 此刻，只管放松`:count?`${count} 层声音，等你入座`:'选一种声音，布置自己的安静';
+  $('#play-state').textContent=mixer.previewId?`单独试听 · ${soundById.get(mixer.previewId).name}`:mixer.loading.length?`${running?'正在播放 · ':''}正在载入 ${mixer.loading.length} 层声音…`:mixer.errors.size?(failed?'连接暂时中断，点播放重试':`${mixer.nodes.size} 层正在播放 · 部分声音可重试`):running?`${count} 层声音 · 此刻，只管放松`:count?`${count} 层声音，等你入座`:'选一种声音，布置自己的安静';
   const master=$('#master-volume'), value=Math.round(mixer.master*100); if(document.activeElement!==master)master.value=value; master.style.setProperty('--value',value+'%'); $('#master-output').textContent=value+'%';
   $$('[data-preview]').forEach(el=>{const active=el.dataset.preview===mixer.previewId;el.classList.toggle('active',active);el.innerHTML=icon(active?'pause':'play');el.setAttribute('aria-label',`${active?'停止试听':'单独试听'}${soundById.get(el.dataset.preview).name}`);});
   $('#atmosphere').style.setProperty('--weather-level',String(.12+Math.min(.7,(mixer.mix['rain-on-window']||mixer.mix['light-rain']||.5))*.6));
@@ -157,7 +158,7 @@ async function refreshInventory() {
     const inventory=await media.inventory();$('#cache-size').textContent=formatBytes(inventory.bytes);$('#cache-count').textContent=`已保存 ${inventory.count} / ${inventory.files.length} 份声音与画面`;
     $('#all-download-size').textContent=formatBytes(inventory.total);$('#storage-bar').style.width=`${inventory.total?inventory.bytes/inventory.total*100:0}%`;$('#settings-cache').textContent=inventory.count?`${formatBytes(inventory.bytes)} 已保存在本机`:'听过的素材自动保存';
     $('#offline-scenes').innerHTML=scenes.map(s=>{const urls=sceneURLs(s),cached=urls.filter(url=>inventory.keys.has(new URL(url,location.href).href)).length;return `<div class="offline-scene"><img src="${image(s.picture)}" alt="" loading="lazy" width="84" height="84"><span>${s.title}<small>${cached===urls.length?'已离线保存':cached?`已保存 ${cached} / ${urls.length} 份素材`:'尚未完整保存'}</small></span><button data-download-scene="${s.id}" ${cached===urls.length?'disabled':''}>${cached===urls.length?'已保存':'保存'}</button></div>`;}).join('');
-    $('#offline-environment').textContent=canCache()?'声音和画面首次成功加载后自动保存在此浏览器，再次使用优先从本地读取。':'当前局域网预览使用普通 HTTP。安装与离线保存需 HTTPS 安全网址；电脑 localhost 可验证完整缓存。';
+    $('#offline-environment').textContent=canCache()?'联网时点播放即可聆听，无需提前保存。听过的素材会自动保存到本机；想断网听完整场景，可以在下方保存。':'联网时可直接聆听。当前普通 HTTP 预览不支持离线保存，请使用正式 HTTPS 网址或电脑 localhost。';
     $$('[data-action="download-current"],[data-action="download-all"],[data-action="persist"],[data-download-scene]').forEach(el=>{if(!canCache()||media.controller)el.disabled=true;else if(!el.dataset.downloadScene)el.disabled=false;});
     if(navigator.storage?.persisted){const persisted=await navigator.storage.persisted();$('#persist-state').textContent=persisted?'浏览器已允许持久保存。主动清理网站数据仍会删除缓存。':'保存完成后断网也能听。可以申请保留离线数据，减少被系统自动清理的可能。';}
   }catch{$('#cache-size').textContent='暂时无法读取';$('#cache-count').textContent='联网后可以再次打开离线设置。';}
@@ -182,7 +183,7 @@ function renderInstall() {
   $('#install-state').textContent=installer.ios?'在 Safari 中，按下面几步把小屋放到主屏幕。':'在支持安装的浏览器中，打开菜单选择安装应用或添加到主屏幕。';
   steps.innerHTML=(installer.ios?['点浏览器的分享按钮；部分布局需先点“更多”。','选择“添加到主屏幕”。','如有“作为网页 App 打开”，将它开启，再点“添加”。']:['打开浏览器右上角菜单。','选择“安装应用”或“添加到主屏幕”，按系统提示完成。','从主屏幕打开小屋，在离线设置中保存喜欢的声音。']).map(s=>`<li>${s}</li>`).join('');
 }
-installer.addEventListener('change',renderInstall);media.addEventListener('change',updateDownload);media.addEventListener('storagewarning',()=>toast('浏览器未能保存部分素材，请在离线设置检查存储。'));
+installer.addEventListener('change',renderInstall);media.addEventListener('change',updateDownload);media.addEventListener('storagewarning',()=>toast('当前可继续在线播放；本机空间不足或保存受限，暂时未能保留离线副本。'));
 
 document.addEventListener('click',async event=>{
   const button=event.target.closest('button');if(!button)return;const d=button.dataset;
@@ -203,7 +204,7 @@ document.addEventListener('click',async event=>{
   if(d.minutes){minutes=Number(d.minutes);renderTimer();return;}
   if(d.downloadScene){await download(sceneURLs(sceneById.get(d.downloadScene)));return;}
   switch(d.action){
-    case'play':if(mixer.playing)mixer.pause();else await safePlay();break;
+    case'play':if(mixer.playing&&(mixer.nodes.size||mixer.loading.length))mixer.pause();else await safePlay();break;
     case'previous':await selectScene(scenes[(requestedIndex+scenes.length-1)%scenes.length].id);break;
     case'next':await selectScene(scenes[(requestedIndex+1)%scenes.length].id);break;
     case'scenes':renderScenes();openDialog('scenes-dialog');break;
@@ -246,6 +247,8 @@ document.addEventListener('keydown',event=>{
 $('#save-form').addEventListener('submit',event=>{event.preventDefault();const name=$('#recipe-name').value.trim();if(!name){toast('给这个声音空间起个名字吧。');return;}if(renameId){const r=store.recipes.find(r=>r.id===renameId);if(r)r.name=name;}else store.recipes.unshift(recipe(name));closeDialogs();renderSaved();writeStore();toast(renameId?'名称已更新':'配方已保存');renameId=null;});
 function importShare(){try{const shared=readShared(location.hash);if(shared){mixer.pause();void selectScene(shared.scene,shared.mix);toast(`已载入「${shared.name}」，点播放开始。`);return true;}}catch(e){toast(e.message);}return false;}
 window.addEventListener('hashchange',importShare);
+window.addEventListener('online',()=>{ mixer.recover(); if(!sceneView.current)void sceneView.show(currentScene,true); });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&navigator.onLine)mixer.recover(); });
 $('#category-list').innerHTML=categories.map(([id,name])=>`<button class="category-button${id==='all'?' active':''}" data-category="${id}" aria-pressed="${id==='all'}">${name}</button>`).join('');
 $('#library-count').textContent=sounds.length;$('#gesture-hint').hidden=store.gestureSeen;
 renderScenes();renderLibrary();renderSaved();setMotion();renderTimer();renderInstall();
@@ -254,4 +257,4 @@ if(!importShare())void sceneView.show(currentScene,true);
 if('mediaSession'in navigator)for(const[action,handler]of[['play',()=>void safePlay()],['pause',()=>mixer.pause()],['stop',()=>mixer.pause()]])try{navigator.mediaSession.setActionHandler(action,handler);}catch{}
 if('serviceWorker'in navigator&&window.isSecureContext)navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).catch(()=>toast('离线功能暂未启用，联网后重新打开可以再试。'));
 void refreshInventory();
-window.soundHouse={mixer,media,installer,get scene(){return currentScene;},get timer(){return timer;},get motion(){return sceneView.motion;},tickTimer,selectScene};
+window.soundHouse={version:'2.4.0',mixer,media,installer,get scene(){return currentScene;},get timer(){return timer;},get motion(){return sceneView.motion;},tickTimer,selectScene};

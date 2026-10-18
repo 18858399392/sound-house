@@ -11,7 +11,7 @@ const server = http.createServer((request, response) => {
     if (!['GET', 'HEAD'].includes(request.method)) { response.writeHead(405).end(); return; }
     const url = new URL(request.url, 'http://localhost');
     const relative = decodeURIComponent(url.pathname).replace(/^\/+/, '') || 'index.html';
-    if (!allowed.has(relative) && !relative.startsWith('assets/')) { response.writeHead(404).end('Not found'); return; }
+    if (!allowed.has(relative) && relative !== 'media-index.js' && !relative.startsWith('assets/')) { response.writeHead(404).end('Not found'); return; }
     const target = path.resolve(root, relative);
     if (!target.startsWith(root) || !existsSync(target) || !statSync(target).isFile()) { response.writeHead(404).end('Not found'); return; }
     const size = statSync(target).size;

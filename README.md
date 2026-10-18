@@ -4,7 +4,13 @@
 
 在线体验：[shengyin.kanglimin.com](https://shengyin.kanglimin.com/) · 基于 [Moodist](https://github.com/remvze/moodist) 改造。
 
-## V2.3 沉浸动态
+## V2.4 播放与离线稳定性
+
+联网直接播放，无需先下载整包。声音下载完成后先解码播放，再后台保存；缓存写入慢、配额不足、缓存读取失败均不会阻塞在线播放。素材按内置清单校验长度和 SHA-256，损坏副本自动修复；网络失败自动重试一次，恢复联网后补试失败声部。暂停整包保存不会中断共用该请求的声音播放。
+
+`media-index.js` 从 `assets/media-manifest.json` 生成，更新素材时须同步更新；构建会校验两份清单一致。
+
+## 沉浸动态
 
 九个主题各自具有定位于实景的动态：雨窗水痕、茶汽山雾、灯下浮尘、雨巷涟漪、林溪水流、海面潮汐、篝火余烬、车窗流光、竹影摇曳。使用同一个 Canvas 2D，按图片裁切定位，约30帧/秒；页面隐藏、关闭动态或系统要求减少动态时停止绘制。没有额外视频下载。
 
@@ -61,17 +67,19 @@
 
 后续修改应用壳文件应同步递增 `sw.js` 的 SHELL 版本，以使已经安装的浏览器获得完整更新。媒体清单记录哈希；未改变的素材跨版本保留。
 
-## 构建与 Cloudflare Pages
+## 构建与 Cloudflare 发布
 
 不需要运行时依赖，Node.js 20+：
 
 ```sh
 npm run build
+npx wrangler deploy --config deploy/wrangler.jsonc
+# 同步备用 Pages 站点
 npx wrangler pages deploy dist --project-name shengyin --branch main --force
 ```
 
 `dist/` 是白名单构建的发布目录，仅含现用页面、模块、图标、音频、画面与授权说明。Cloudflare Pages 使用直接上传；推送 GitHub 不会自动部署，修改后重新执行上述命令。
 
-正式子域名使用 Cloudflare 管理的 Custom Domain DNS/TLS，由 `deploy/domain-proxy.js` 将请求流式转发到 Pages。页面、声音与画面仍在 `shengyin-72d.pages.dev`；无需把素材再存一份，也保留原始缓存与音频 Range 响应。日常更新只需发布 Pages；仅修改域名入口时执行 `npx wrangler deploy --config deploy/wrangler.jsonc`。入口使用 Workers 请求配额。
+正式子域名使用 Cloudflare 管理的 Custom Domain DNS/TLS，直接由 Workers Static Assets 提供 `dist/`，避免声音先经 Worker 再访问 Pages 的额外回源环节。无需调用代理脚本；资源不存在时返回 404，不把 HTML 当成成功的音频响应。备用站点为 `shengyin-72d.pages.dev`。更新时先构建，再发布正式站与备用站；仅推送 GitHub 不会自动更新这两个站点。旧代理源码保留作回滚参考。
 
 代码遵循 MIT，保留 `LICENSE-Moodist` 上游声明。声音素材与代码采用不同许可，具体来源及上游逐文件授权映射缺失情况见[素材与授权](素材与授权.md)。请勿把集成音频当作 MIT 素材包再分发。
