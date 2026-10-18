@@ -3,6 +3,7 @@ import { SoundMixer } from './mixer.js';
 import { loadStore, saveStore, shareURL, readShared, newId, cleanMix } from './storage.js';
 import { media, canCache, formatBytes } from './offline.js';
 import { SceneView } from './scene-view.js';
+import { scenePoster, sceneFilmURL } from './scene-film.js';
 import { InstallManager } from './install.js';
 import { icon, escape } from './icons.js';
 const $ = selector => document.querySelector(selector), $$ = selector => [...document.querySelectorAll(selector)];
@@ -70,7 +71,7 @@ async function safePlay() {
   try { await mixer.play(); } catch (error) { toast(error.message || '声音未能启动，请再点播放。'); }
 }
 function renderScenes() {
-  $('#scene-grid').innerHTML = scenes.map(s => `<button class="scene-card${s.id===currentScene.id?' active':''}" data-scene="${s.id}" aria-pressed="${s.id===currentScene.id}" aria-label="切换到${s.title}"><img src="${image(s.picture)}" alt="${s.title}实景" loading="lazy" width="420" height="420"><span class="scene-card-title"><strong>${s.title}</strong><small>${s.mood}</small></span></button>`).join('');
+  $('#scene-grid').innerHTML = scenes.map(s => `<button class="scene-card${s.id===currentScene.id?' active':''}" data-scene="${s.id}" aria-pressed="${s.id===currentScene.id}" aria-label="切换到${s.title}"><img src="${scenePoster(s)}" alt="${s.title}实景" loading="lazy" width="420" height="420"><span class="scene-card-title"><strong>${s.title}</strong><small>${s.mood}</small></span></button>`).join('');
 }
 function soundRow(s) {
   const selected = s.id in mixer.mix, favorite = store.favorites.includes(s.id);
@@ -151,14 +152,14 @@ function tickTimer() {
   if(left<=0){if(timer.mode==='focus'&&timer.phase!=='break'){mixer.pause(1);timer={mode:'focus',phase:'break',deadline:Date.now()+300000};toast('这一轮专注完成，休息5分钟。');}else{const rest=timer.phase==='break';timer=null;mixer.pause(1);toast(rest?'休息结束，准备好后再开始下一轮。':'定时结束，愿你休息得很好。');}tickTimer();}
 }
 setInterval(tickTimer,500);document.addEventListener('visibilitychange',tickTimer);
-const sceneURLs=s=>[image(s.picture),...Object.keys(s.mix).map(id=>soundById.get(id).src)];
-function currentURLs(){return [image(currentScene.picture),...Object.keys(mixer.mix).map(id=>soundById.get(id).src)];}
+const sceneURLs=s=>[scenePoster(s),...Object.keys(s.mix).map(id=>soundById.get(id).src),...(sceneFilmURL(s)?[sceneFilmURL(s)]:[])];
+function currentURLs(){return sceneURLs({...currentScene,mix:mixer.mix});}
 async function refreshInventory() {
   try {
     const inventory=await media.inventory();$('#cache-size').textContent=formatBytes(inventory.bytes);$('#cache-count').textContent=`已保存 ${inventory.count} / ${inventory.files.length} 份声音与画面`;
     $('#all-download-size').textContent=formatBytes(inventory.total);$('#storage-bar').style.width=`${inventory.total?inventory.bytes/inventory.total*100:0}%`;$('#settings-cache').textContent=inventory.count?`${formatBytes(inventory.bytes)} 已保存在本机`:'听过的素材自动保存';
-    $('#offline-scenes').innerHTML=scenes.map(s=>{const urls=sceneURLs(s),cached=urls.filter(url=>inventory.keys.has(new URL(url,location.href).href)).length;return `<div class="offline-scene"><img src="${image(s.picture)}" alt="" loading="lazy" width="84" height="84"><span>${s.title}<small>${cached===urls.length?'已离线保存':cached?`已保存 ${cached} / ${urls.length} 份素材`:'尚未完整保存'}</small></span><button data-download-scene="${s.id}" ${cached===urls.length?'disabled':''}>${cached===urls.length?'已保存':'保存'}</button></div>`;}).join('');
-    $('#offline-environment').textContent=canCache()?'联网时点播放即可聆听，无需提前保存。听过的素材会自动保存到本机；想断网听完整场景，可以在下方保存。':'联网时可直接聆听。当前普通 HTTP 预览不支持离线保存，请使用正式 HTTPS 网址或电脑 localhost。';
+    $('#offline-scenes').innerHTML=scenes.map(s=>{const urls=sceneURLs(s),cached=urls.filter(url=>inventory.keys.has(new URL(url,location.href).href)).length;return `<div class="offline-scene"><img src="${scenePoster(s)}" alt="" loading="lazy" width="84" height="84"><span>${s.title}<small>${cached===urls.length?'已离线保存':cached?`已保存 ${cached} / ${urls.length} 份素材`:'尚未完整保存'}</small></span><button data-download-scene="${s.id}" ${cached===urls.length?'disabled':''}>${cached===urls.length?'已保存':'保存'}</button></div>`;}).join('');
+    $('#offline-environment').textContent=canCache()?'联网时点播放即可聆听。加载过的声音与实景视频会自动保存；下方保存场景时会一起保存视频，断网重开也能看、能听。':'联网时可直接聆听。当前普通 HTTP 预览不支持离线保存，请使用正式 HTTPS 网址或电脑 localhost。';
     $$('[data-action="download-current"],[data-action="download-all"],[data-action="persist"],[data-download-scene]').forEach(el=>{if(!canCache()||media.controller)el.disabled=true;else if(!el.dataset.downloadScene)el.disabled=false;});
     if(navigator.storage?.persisted){const persisted=await navigator.storage.persisted();$('#persist-state').textContent=persisted?'浏览器已允许持久保存。主动清理网站数据仍会删除缓存。':'保存完成后断网也能听。可以申请保留离线数据，减少被系统自动清理的可能。';}
   }catch{$('#cache-size').textContent='暂时无法读取';$('#cache-count').textContent='联网后可以再次打开离线设置。';}
@@ -257,4 +258,4 @@ if(!importShare())void sceneView.show(currentScene,true);
 if('mediaSession'in navigator)for(const[action,handler]of[['play',()=>void safePlay()],['pause',()=>mixer.pause()],['stop',()=>mixer.pause()]])try{navigator.mediaSession.setActionHandler(action,handler);}catch{}
 if('serviceWorker'in navigator&&window.isSecureContext)navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'}).catch(()=>toast('离线功能暂未启用，联网后重新打开可以再试。'));
 void refreshInventory();
-window.soundHouse={version:'2.4.1',mixer,media,installer,get scene(){return currentScene;},get timer(){return timer;},get motion(){return sceneView.motion;},tickTimer,selectScene};
+window.soundHouse={version:'2.5.0',mixer,media,installer,get scene(){return currentScene;},get timer(){return timer;},get motion(){return sceneView.motion;},get film(){return sceneView.film;},tickTimer,selectScene};

@@ -46,6 +46,7 @@ class OfflineMedia extends EventTarget {
     job.finally(() => { if (this.writes.get(key) === job) this.writes.delete(key); });
   }
   async load(key, force) {
+    const video = /\/assets\/videos\//.test(key);
     if (!force && canCache()) {
       try {
         const cached = await bounded((async () => {
@@ -54,7 +55,7 @@ class OfflineMedia extends EventTarget {
           const bytes = await response.arrayBuffer();
           if (!await this.valid(key, response, bytes)) { void this.invalidate(key); return null; }
           return { bytes, headers: [...response.headers] };
-        })());
+        })(), video ? 4000 : 1500);
         if (cached) return cached;
       } catch { /* CacheStorage is optional; keep online playback available. */ }
     }
@@ -64,7 +65,8 @@ class OfflineMedia extends EventTarget {
         const response = await fetch(key, {
           headers: { 'X-Sound-House-Media': '1' },
           cache: force || attempt ? 'reload' : 'default',
-          signal: AbortSignal.timeout(attempt ? 40000 : 18000),
+          priority: video ? 'low' : 'high',
+          signal: AbortSignal.timeout(video ? (attempt ? 120000 : 60000) : (attempt ? 40000 : 18000)),
         });
         const bytes = await response.arrayBuffer();
         if (!await this.valid(key, response, bytes)) throw new Error('素材下载不完整');

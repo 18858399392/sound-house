@@ -24,7 +24,8 @@ export class SceneMotion {
     gradient.addColorStop(0,'#fff'); gradient.addColorStop(.3,'#ffffffb0'); gradient.addColorStop(1,'#ffffff00');
     g.fillStyle=gradient; g.fillRect(0,0,96,96); this.resize();
   }
-  setScene(scene,image) {
+  setScene(scene,image,suppressed=false) {
+    this.suppressed = suppressed;
     this.scene = scene; this.image = image; this.elapsed = 0;
     this.host.dataset.effect = scene.id; this.clear(); this.sync();
   }
@@ -38,7 +39,7 @@ export class SceneMotion {
     this.offsetY = (height-H*this.scale)*.5;
     if(this.scene) this.draw(this.elapsed);
   }
-  get enabled() { return this.ctx && this.scene && !document.hidden && !document.body.classList.contains('motion-off') && !this.preference.matches; }
+  get enabled() { return this.ctx && this.scene && !this.suppressed && !document.hidden && !document.body.classList.contains('motion-off') && !this.preference.matches; }
   sync() {
     if(!this.enabled) {
       cancelAnimationFrame(this.frame); this.frame=0; this.last=0; this.clear(); return;

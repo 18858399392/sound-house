@@ -4,14 +4,14 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import os from 'node:os';
 const root = fileURLToPath(new URL('./', import.meta.url));
-const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png', '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.md': 'text/plain; charset=utf-8', '.webmanifest': 'application/manifest+json' };
+const mime = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png', '.mp4': 'video/mp4', '.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.md': 'text/plain; charset=utf-8', '.webmanifest': 'application/manifest+json' };
 const allowed = new Set(['index.html','app.js','audio.js','data.js','storage.js','styles.css','sw.js','manifest.webmanifest','素材与授权.md','LICENSE-Moodist','README.md','immersive-app.js','immersive.css','mixer.js','offline.js','scene-view.js','scene-motion.js','install.js','icons.js']);
 const server = http.createServer((request, response) => {
   try {
     if (!['GET', 'HEAD'].includes(request.method)) { response.writeHead(405).end(); return; }
     const url = new URL(request.url, 'http://localhost');
     const relative = decodeURIComponent(url.pathname).replace(/^\/+/, '') || 'index.html';
-    if (!allowed.has(relative) && relative !== 'media-index.js' && !relative.startsWith('assets/')) { response.writeHead(404).end('Not found'); return; }
+    if (!allowed.has(relative) && !['media-index.js','scene-film.js'].includes(relative) && !relative.startsWith('assets/')) { response.writeHead(404).end('Not found'); return; }
     const target = path.resolve(root, relative);
     if (!target.startsWith(root) || !existsSync(target) || !statSync(target).isFile()) { response.writeHead(404).end('Not found'); return; }
     const size = statSync(target).size;

@@ -1,9 +1,11 @@
 import { media } from './offline.js';
 import { SceneMotion } from './scene-motion.js';
+import { SceneFilm, sceneFilms, scenePoster } from './scene-film.js';
 export class SceneView {
   constructor(stage, onStep, onError) {
     this.stage = stage; this.onStep = onStep; this.onError = onError;
     this.motion = new SceneMotion(stage.querySelector('#atmosphere'));
+    this.film = new SceneFilm(stage, onError);
     this.images = [...stage.querySelectorAll('.scene-image')]; this.active = 0; this.token = 0; this.current = null; this.blobs = [];
     let start = null, lastWheel = 0, wheelSum = 0;
     stage.addEventListener('pointerdown', event => {
@@ -32,9 +34,10 @@ export class SceneView {
     if (this.current?.picture === scene.picture) { this.current = scene; this.weather(scene); return true; }
     let blobURL;
     try {
-      const response = await media.get(`assets/images/${scene.picture}.webp`);
+      const response = await media.get(scenePoster(scene));
       blobURL = URL.createObjectURL(await response.blob());
       const next = this.images[1 - this.active]; next.src = blobURL; next.alt = `${scene.title}的写实场景`;
+      next.style.objectPosition = sceneFilms[scene.id] ? '50% center' : '';
       await next.decode();
       if (token !== this.token) { URL.revokeObjectURL(blobURL); return false; }
       const previous = this.images[this.active];
@@ -50,6 +53,7 @@ export class SceneView {
     }
   }
   weather(scene) {
-    this.motion.setScene(scene,this.images[this.active]);
+    this.motion.setScene(scene,this.images[this.active],!!sceneFilms[scene.id]);
+    this.film.setScene(scene);
   }
 }

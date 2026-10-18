@@ -1,0 +1,66 @@
+{
+  "verifiedOn": "2026-10-18",
+  "note": "Real footage, self-hosted as modified silent scene loops. Videos have independent licenses and are not covered by the code MIT license. Posters are extracted from each finished loop.",
+  "sources": [
+    {
+      "scene": "forest",
+      "title": "Serene Forest Waterfall Cascading in Sunlight",
+      "creator": "Engin Akyurt",
+      "source": "https://www.pexels.com/video/serene-forest-waterfall-cascading-in-sunlight-31194458/",
+      "download": "https://videos.pexels.com/video-files/31194458/13325533_2160_3840_30fps.mp4",
+      "license": "Pexels License",
+      "licenseURL": "https://www.pexels.com/license/",
+      "processing": "Selected a fixed 10 second excerpt, downscaled to 1080x1920 at 24fps; blended last 1s into first 1s for a 9s loop; original audio removed.",
+      "file": {
+        "url": "assets/videos/forest-loop.mp4",
+        "bytes": 6743403,
+        "sha256": "09d8b3b8cf93d7706c13745da7c4680790c6f572a4ab1348081d4a2ad4658497"
+      },
+      "poster": {
+        "url": "assets/images/forest-film.webp",
+        "bytes": 141162,
+        "sha256": "14b4e3cf0c8acebdc451855f3c518c7b1b09d1824ed33c94415b6d19bf5af5f9"
+      }
+    },
+    {
+      "scene": "sea",
+      "title": "View from a calm beach during a sunset",
+      "creator": "rubenvelasco",
+      "source": "https://mixkit.co/free-stock-video/view-from-a-calm-beach-during-a-sunset-44498/",
+      "download": "https://assets.mixkit.co/videos/44498/44498-720.mp4",
+      "license": "Mixkit Stock Video Free License",
+      "licenseURL": "https://mixkit.co/license/#videoFree",
+      "processing": "Selected 7.5s, 1280x720 at 24fps; blended last 1s into first 1s for a 6.5s loop; original audio removed.",
+      "file": {
+        "url": "assets/videos/sea-loop.mp4",
+        "bytes": 1549406,
+        "sha256": "57fe81c2643eea794ade750845a0bdd663ca124df05ea817ba4d56b141b16973"
+      },
+      "poster": {
+        "url": "assets/images/sea-film.webp",
+        "bytes": 53572,
+        "sha256": "698f310e53868e500033657f65e15c30f46adefe2791dcb5e95bba3163965ab8"
+      }
+    },
+    {
+      "scene": "fire",
+      "title": "Burning Campfire at Night",
+      "creator": "Hebert Santos",
+      "source": "https://www.pexels.com/video/burning-campfire-at-night-10287039/",
+      "download": "https://videos.pexels.com/video-files/10287039/10287039-hd_720_1280_30fps.mp4",
+      "license": "Pexels License",
+      "licenseURL": "https://www.pexels.com/license/",
+      "processing": "Selected 8s, padded portrait footage into a 1280x720 night-black frame for desktop/mobile cropping; 24fps, blended tail/head 1s for a 7s loop; silent.",
+      "file": {
+        "url": "assets/videos/fire-loop.mp4",
+        "bytes": 573134,
+        "sha256": "85e3eca2573544591247e815644b2fbe2309317b22bc4fcf312184f94642c680"
+      },
+      "poster": {
+        "url": "assets/images/fire-film.webp",
+        "bytes": 22502,
+        "sha256": "6cc2c65bc271cf2ed01dfe82810543199c81cea23eaf52a14ef3dd397fe56b07"
+      }
+    }
+  ]
+}

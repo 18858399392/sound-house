@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-18-v2",
+  "version": "2026-10-18-v2.5",
   "files": [
     {
       "url": "assets/sounds/rain/rain-on-window.mp3",
@@ -300,6 +300,36 @@
       "url": "assets/images/bamboo.webp",
       "bytes": 415696,
       "sha256": "4c9796ca56150ab4e28721fb39fd8b2067dce6115b7b145878d50f417cc9ea32"
+    },
+    {
+      "url": "assets/videos/forest-loop.mp4",
+      "bytes": 6743403,
+      "sha256": "09d8b3b8cf93d7706c13745da7c4680790c6f572a4ab1348081d4a2ad4658497"
+    },
+    {
+      "url": "assets/images/forest-film.webp",
+      "bytes": 141162,
+      "sha256": "14b4e3cf0c8acebdc451855f3c518c7b1b09d1824ed33c94415b6d19bf5af5f9"
+    },
+    {
+      "url": "assets/videos/sea-loop.mp4",
+      "bytes": 1549406,
+      "sha256": "57fe81c2643eea794ade750845a0bdd663ca124df05ea817ba4d56b141b16973"
+    },
+    {
+      "url": "assets/images/sea-film.webp",
+      "bytes": 53572,
+      "sha256": "698f310e53868e500033657f65e15c30f46adefe2791dcb5e95bba3163965ab8"
+    },
+    {
+      "url": "assets/videos/fire-loop.mp4",
+      "bytes": 573134,
+      "sha256": "85e3eca2573544591247e815644b2fbe2309317b22bc4fcf312184f94642c680"
+    },
+    {
+      "url": "assets/images/fire-film.webp",
+      "bytes": 22502,
+      "sha256": "6cc2c65bc271cf2ed01dfe82810543199c81cea23eaf52a14ef3dd397fe56b07"
     }
   ]
 }
