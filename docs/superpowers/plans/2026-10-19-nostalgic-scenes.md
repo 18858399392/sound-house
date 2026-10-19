@@ -12,6 +12,7 @@
 - [x] Implement localized television glow, classroom dust and window snowfall. Add a 4s-in/6s-out optional-paced visual breath guide with natural-breathing copy, reduced-motion support and hidden-page cleanup.
 - [x] Update manifests, generated integrity index, shell version and build allowlists. Reuse the stable media cache; update about/README/credits and dynamic scene/sound counts.
 - [x] Verify actual mixed PCM, scene selection at 320/390/desktop widths, four effects, breathing phases, old recipe/default migration, saved offline cold-start playback, and unchanged forest/sea/fire video hashes.
-- [ ] Commit, publish GitHub and both existing Cloudflare deployments, verify canonical assets and leave the updated preview. Keep current hosting and avoid paid services.
+- [x] Commit, publish GitHub and both existing Cloudflare deployments, verify canonical assets and leave the updated preview. Keep current hosting and avoid paid services.
 
 Accepted clarification: ambient meditation with visual breathing guidance, without spoken meditation instructions. The guide is a gentle optional rhythm, with no breath holds or health claims. Only the calm visual/ambient direction of Tide is referenced.
+
