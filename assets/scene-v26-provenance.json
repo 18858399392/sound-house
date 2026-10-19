@@ -1,0 +1,93 @@
+{
+  "createdOn": "2026-10-19",
+  "images": [
+    {
+      "scene": "tv",
+      "tool": "Built-in image_gen",
+      "prompt": "1998年中国家庭卧室，枕头高度视角，居中的老式CRT电视散发柔和蓝光，暖台灯、木柜、棉被与暖水瓶，干燥夜晚，无雨，无可识别节目、品牌或文字。写实摄影，中央竖屏裁切可见电视，下方安静留白。",
+      "file": {
+        "url": "assets/images/tv.webp",
+        "bytes": 153334,
+        "sha256": "114d0283c7d5360fdfb56d53f62e937be549e19a26a60b50d0e1da68d189436f"
+      }
+    },
+    {
+      "scene": "classroom",
+      "tool": "Built-in image_gen",
+      "prompt": "2002年前后的中国中学午后课堂，从后排木课桌看向中央绿黑板和远处老师，左窗金色日光、旧吊扇、书本和学生背影，人物无可识别身份，不画可读文字。写实摄影，中央手机裁切保留老师。",
+      "file": {
+        "url": "assets/images/classroom.webp",
+        "bytes": 183728,
+        "sha256": "6519a224330652d1209180a62830c215ea922df4ca67ec7742b1c6b1ed55be75"
+      }
+    },
+    {
+      "scene": "snow",
+      "tool": "Built-in image_gen",
+      "prompt": "安静中国山间木屋，宽窗外雪松与覆雪山坡，冷蓝漫射晨光，屋内暖台灯、木桌、瓷杯与毛毯；只在窗外飘雪，室内干燥。写实材质与深景细节，中央竖屏裁切保留雪景。",
+      "file": {
+        "url": "assets/images/snow.webp",
+        "bytes": 394158,
+        "sha256": "e2ce853602c1d5683694e91fd67c8fbadb67f7aceaac061ea550600b161bb6f1"
+      }
+    },
+    {
+      "scene": "meditation",
+      "tool": "Built-in image_gen",
+      "prompt": "原创极简晨光冥想室，木地板、亚麻坐垫、素颂钵，宽窗面向薄雾静湖和层叠远山，淡暖自然光，中央留出呼吸圆环空间但图中不绘制UI。写实安静摄影，无品牌或文字。",
+      "file": {
+        "url": "assets/images/meditation.webp",
+        "bytes": 272454,
+        "sha256": "33c78cc210aa366da4c0d47a6d8efd7697ca81130edb67882cccbb8e31c76ab4"
+      }
+    }
+  ],
+  "audio": [
+    {
+      "id": "tv-voices",
+      "kind": "Original Chinese text, locally synthesized atmospheric audio; not a recording of a broadcast or a real classroom.",
+      "voice": "Microsoft Huihui Desktop",
+      "text": [
+        "夜色渐渐深了，街边的小店也亮起了灯。欢迎来到今晚的城市漫游。今天的镜头，从一条安静的小街开始。",
+        "街角有一家开了很多年的小店。木门被轻轻推开，柜台后面的人抬起头，笑着说，回来啦。熟悉的声音，在晚风里慢慢散开。",
+        "沿着街道往前走，可以看见一座小桥。桥下的水流得很慢，两岸的灯影，落在水面上。白天热闹的街巷，到了晚上，也有了自己的安静。",
+        "有的人家刚刚吃过晚饭，桌上的碗筷还没有收。有人在窗边整理旧相册，一页一页，翻过从前的日子。电视里的故事，还在不紧不慢地讲着。",
+        "再往前，是一片靠山的村庄。傍晚的时候，最后一辆小巴停在路边。提着布袋的人走下车，沿着熟悉的石阶，往家的方向走去。",
+        "这里的春天，有很长的黄昏。院子里的树，慢慢长出了新叶。老人搬一把椅子坐在门口，看远处的山，也看街坊们来来往往。",
+        "有时候，一天里最让人记得的，不过是一碗热汤，一句普通的问候，或是一盏一直亮着的灯。那些平常的时刻，连起来，就是我们熟悉的生活。",
+        "镜头转向小城外的田野。风从田埂上经过，远处传来晚归的脚步声。天边的云，渐渐收起最后一点颜色。家家户户的窗前，留下柔和的灯光。",
+        "今晚的漫游，先在这里停一停。明天，我们还会沿着这条小路，去看看新的风景。屋里的灯还亮着，熟悉的声音，仍在轻轻地讲述。"
+      ],
+      "processing": "highpass=f=180,lowpass=f=1900,aecho=0.8:0.72:42|91:0.13|0.08,volume=0.5, mono 32kHz/80kbps MP3, up to120s",
+      "file": {
+        "url": "assets/sounds/places/tv-voices.mp3",
+        "bytes": 1201005,
+        "sha256": "b5a3982974914a733e16788530c66ce436008cbdb53263b29a7ab7a16425815b"
+      }
+    },
+    {
+      "id": "teacher-lecture",
+      "kind": "Original Chinese text, locally synthesized atmospheric audio; not a recording of a broadcast or a real classroom.",
+      "voice": "Microsoft Kangkang",
+      "text": [
+        "同学们，我们接着来看今天这一节。先不用急着写答案，大家想一想，一块木头放进水里，为什么常常会浮在水面上。",
+        "我们把物体放进水里，水会对它产生一个向上的力。这个向上的力，就叫作浮力。观察的时候，可以先看物体的位置，再想一想，它受到哪些力。",
+        "大家看黑板。重力的方向是竖直向下，浮力的方向是竖直向上。我们把这两个方向画清楚，分析起来，就会容易一些。",
+        "如果物体静止地漂在水面上，说明它在竖直方向上受到的力是平衡的。所以这时，浮力的大小，和物体受到的重力相等。",
+        "这里要注意，漂浮和悬浮不完全一样。漂浮的物体，有一部分露在水面上。悬浮的物体，浸没在液体里。它们都可以保持静止，但位置不同。",
+        "我们再换一个角度来想。当一只空的小碗放在水面上，它排开了一部分水。往碗里面慢慢加水，碗会下沉一点，排开水的体积，也随之增大。",
+        "这个实验不需要很复杂的器材。一盆水，一个小容器，就可以观察到。做实验时，动作慢一点，注意前后两次水面的位置，有没有发生变化。",
+        "下面这一段，大家可以在笔记本上整理一下。第一，找出研究的物体。第二，判断它处在什么状态。第三，把受到的力和方向写清楚。",
+        "不要只记一个结论。我们更需要知道，这个结论是在什么条件下得到的。条件变了，分析的方法还可以用，但具体的结果，需要重新判断。",
+        "好，大家先把这道例题看一看。可以从受力分析开始，想好以后，再慢慢写出自己的过程。窗边的同学，也可以看看演示桌上这个小实验。"
+      ],
+      "processing": "highpass=f=160,lowpass=f=2200,aecho=0.8:0.7:58|117:0.16|0.09,volume=0.55, mono 32kHz/80kbps MP3, up to120s",
+      "file": {
+        "url": "assets/sounds/places/teacher-lecture.mp3",
+        "bytes": 1201005,
+        "sha256": "9202788430e5b3cf8ae7474163cc25fa05150167541f53e0ca28dd9c326cd207"
+      }
+    }
+  ],
+  "reference": "Tide only informed the calm ambience and breathing direction. No Tide artwork, scripts or audio is used."
+}

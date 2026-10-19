@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-19-v2.5.5",
+  "version": "2026-10-19-v2.6.0",
   "files": [
     {
       "url": "assets/sounds/rain/rain-on-window.mp3",
@@ -330,6 +330,36 @@
       "url": "assets/images/fire-film.webp",
       "bytes": 22502,
       "sha256": "6cc2c65bc271cf2ed01dfe82810543199c81cea23eaf52a14ef3dd397fe56b07"
+    },
+    {
+      "url": "assets/images/tv.webp",
+      "bytes": 153334,
+      "sha256": "114d0283c7d5360fdfb56d53f62e937be549e19a26a60b50d0e1da68d189436f"
+    },
+    {
+      "url": "assets/images/classroom.webp",
+      "bytes": 183728,
+      "sha256": "6519a224330652d1209180a62830c215ea922df4ca67ec7742b1c6b1ed55be75"
+    },
+    {
+      "url": "assets/images/snow.webp",
+      "bytes": 394158,
+      "sha256": "e2ce853602c1d5683694e91fd67c8fbadb67f7aceaac061ea550600b161bb6f1"
+    },
+    {
+      "url": "assets/images/meditation.webp",
+      "bytes": 272454,
+      "sha256": "33c78cc210aa366da4c0d47a6d8efd7697ca81130edb67882cccbb8e31c76ab4"
+    },
+    {
+      "url": "assets/sounds/places/tv-voices.mp3",
+      "bytes": 1201005,
+      "sha256": "b5a3982974914a733e16788530c66ce436008cbdb53263b29a7ab7a16425815b"
+    },
+    {
+      "url": "assets/sounds/places/teacher-lecture.mp3",
+      "bytes": 1201005,
+      "sha256": "9202788430e5b3cf8ae7474163cc25fa05150167541f53e0ca28dd9c326cd207"
     }
   ]
 }

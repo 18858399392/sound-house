@@ -12,3 +12,12 @@ input[type=range]{appearance:none;-webkit-appearance:none;height:4px;background:
 @media(max-height:600px) and (min-width:768px){.scene-copy{bottom:135px}.scene-copy h1{font-size:44px}.scene-eyebrow{margin-bottom:6px}.scene-line{margin-top:8px}.scene-navigation{bottom:140px}.bottom-controls{bottom:23px}.gesture-hint{display:none}}
 .toast{top:auto;right:auto;margin:0}.toast::backdrop{background:transparent;pointer-events:none}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.atmosphere{display:none}}
+
+/* Optional visual breathing rhythm in the meditation scene. */
+.breathing-guide{position:absolute;z-index:2;left:50%;top:38%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;color:#f3ead9;text-shadow:0 1px 14px #263c3160}
+.breathing-guide[hidden]{display:none}.breathing-orbit{position:relative;width:142px;height:142px;display:grid;place-items:center}
+.breathing-ring{position:absolute;inset:0;border:1px solid #efe5cdab;border-radius:50%;background:radial-gradient(circle,#d6d8c51a,#263c311a);box-shadow:0 0 30px #fff1c91a,inset 0 0 24px #fff8dd10;transform:scale(var(--breath-scale,.72));transition:transform 90ms linear}
+.breathing-word{font-family:var(--serif);font-size:23px;letter-spacing:5px;padding-left:5px}.breathing-guide>p{font-size:10px;letter-spacing:1.5px;margin-top:10px;white-space:nowrap;color:#ede8dbd9}
+.breathing-guide.is-still .breathing-ring{transform:scale(.82);transition:none}.breathing-guide.is-still .breathing-word{font-size:18px;letter-spacing:2px;padding-left:2px}
+@media(max-width:767px){.breathing-guide{top:36%}.breathing-orbit{width:118px;height:118px}.breathing-word{font-size:21px}.breathing-guide>p{font-size:9px;letter-spacing:1px}}
+@media(max-height:500px){.breathing-guide{top:33%;left:66%}.breathing-orbit{width:95px;height:95px}.breathing-guide>p{margin-top:2px}}

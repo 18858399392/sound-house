@@ -47,6 +47,8 @@ export const sounds = [
   sound('cicadas', '夏日蝉鸣', 'animals', 'bamboo', '竹影摇动，夏天有了声音。', '蝉 知了 夏日 午后'),
   sound('tea-cup', '茶杯轻落', 'things', 'tea', '杯盏轻轻一碰，日子慢下来。', '茶具 陶瓷 杯子 品茶'),
   sound('bamboo', '竹林风声', 'nature', 'bamboo', '竹叶沙沙，竹节偶尔轻响。', '竹林 叶子 风声 夏日'),
+  sound('tv-voices', '远处的电视', 'places', 'tv', '隔着一点距离，熟悉的中文节目声。', '电视 怀旧 人声 中文 睡眠 伴眠'),
+  sound('teacher-lecture', '老师的讲课声', 'places', 'classroom', '黑板前的声音，不紧不慢地讲着。', '课堂 老师 中文 人声 午后 学习'),
 ];
 export const playback = {
   thunder: { mode: 'event', gap: [32, 85], seconds: 32 },
@@ -54,6 +56,8 @@ export const playback = {
   'tea-cup': { mode: 'event', gap: [20, 48], seconds: 7 },
   'singing-bowl': { mode: 'event', gap: [38, 75], seconds: 30 },
   'wind-chimes': { mode: 'event', gap: [18, 45], seconds: 20 },
+  'tv-voices': { mode: 'loop', seconds: 120, blend: 1.4 },
+  'teacher-lecture': { mode: 'loop', seconds: 120, blend: 1.4 },
 };
 export const configForSound = id => playback[id] || {
   mode: 'loop', seconds: ['river','waves','light-rain','jungle','bamboo','cafe','library'].includes(id) ? 60 : id === 'clock' ? 24 : 48,
@@ -68,8 +72,11 @@ export const scenes = [
   { id: 'forest', title: '林间清晨', en: 'WHERE THE FOREST WAKES', picture: 'forest', mood: '自然 · 休憩', line: '走进绿意里，听见自己的呼吸。', description: '溪水越过苔石，鸟鸣落在枝头。\n今天，从一片安静的绿开始。', weather: 'mist', mix: { river: .48, birds: .3, 'wind-in-trees': .25 } },
   { id: 'sea', title: '海边黄昏', en: 'A LITTLE CLOSER TO THE SEA', picture: 'sea', mood: '放松 · 发呆', line: '让潮汐带走一些不必着急的事。', description: '日落没有催促，海风也是。\n就坐在这里，等下一阵浪来。', weather: 'sea', mix: { waves: .64, wind: .18 } },
   { id: 'fire', title: '星下篝火', en: 'WARMTH UNDER THE STARS', picture: 'fire', mood: '夜晚 · 放松', line: '夜色很深，火光很暖。', description: '火星轻轻升起，虫鸣从林间传来。\n此刻，你不必去任何地方。', weather: 'embers', mix: { campfire: .62, crickets: .22 } },
-  { id: 'train', title: '夜行列车', en: 'A WINDOW TO THE NIGHT', picture: 'train', mood: '旅途 · 入眠', line: '把心事放在窗外，把自己交给远方。', description: '车轮缓缓，灯火掠过。\n在熟悉的节奏里，做一个漫长的梦。', weather: 'rain', mix: { 'inside-a-train': .6, 'light-rain': .22 } },
+  { id: 'tv', title: '电视伴眠', en: 'THE TV IS STILL ON', picture: 'tv', mood: '怀旧 · 伴眠', line: '电视还开着，熟悉的声音还在。', description: '旧电视映着微光，屋里有人轻轻讲着。\n像小时候那样，安心地听一会儿。', weather: 'television', mix: { 'tv-voices': .58, 'ceiling-fan': .12, 'vinyl-effect': .06 } },
   { id: 'bamboo', title: '竹影夏昼', en: 'A SLOW SUMMER AFTERNOON', picture: 'bamboo', mood: '夏日 · 小憩', line: '竹影摇过窗，午后很长。', description: '风扇轻转，远处蝉鸣。\n就让这个下午，慢一点过去。', weather: 'bamboo', mix: { bamboo: .48, cicadas: .23, 'ceiling-fan': .18 } },
+  { id: 'classroom', title: '午后课堂', en: 'A DROWSY AFTERNOON CLASS', picture: 'classroom', mood: '午后 · 小憩', line: '老师还在讲，午后的风轻轻吹。', description: '讲台上的声音不紧不慢，日光落在书页上。\n想起那个撑着下巴的下午。', weather: 'classroom', mix: { 'teacher-lecture': .54, 'ceiling-fan': .1, paper: .08 } },
+  { id: 'snow', title: '雪日小屋', en: 'SNOW OUTSIDE, WARMTH WITHIN', picture: 'snow', mood: '冬日 · 看雪', line: '窗外下着雪，屋里有一点暖。', description: '雪落在远山和松枝上，屋里有安静的炉火。\n看着雪，慢慢坐一会儿。', weather: 'snow', mix: { wind: .2, campfire: .3, 'brown-noise': .08 } },
+  { id: 'meditation', title: '静坐冥想', en: 'A MOMENT BETWEEN BREATHS', picture: 'meditation', mood: '呼吸 · 静坐', line: '不赶时间，只跟着一呼一吸。', description: '晨光、湖面，还有慢慢散开的钵声。\n自然呼吸，不必勉强跟随节奏。', weather: 'meditation', mix: { waves: .24, 'singing-bowl': .16, 'wind-in-trees': .1 } },
 ];
 export const sceneById = new Map(scenes.map(s => [s.id, s]));
 export const sceneForSound = s => scenes.find(x => x.picture === s.picture) || {

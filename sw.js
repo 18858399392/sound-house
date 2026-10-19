@@ -1,6 +1,6 @@
-const SHELL = 'sound-house-shell-v2.5.5';
+const SHELL = 'sound-house-shell-v2.6.0';
 const MEDIA = 'sound-house-media-v1';
-const FILES = ['./','index.html','immersive.css','immersive-app.js','data.js','mixer.js','storage.js','offline.js','media-index.js','scene-view.js','scene-motion.js','scene-film.js','install.js','icons.js','manifest.webmanifest','assets/icon.svg','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/icon-maskable.png','assets/media-manifest.json','素材与授权.md'];
+const FILES = ['./','index.html','immersive.css','immersive-app.js','data.js','mixer.js','storage.js','offline.js','media-index.js','scene-view.js','scene-motion.js','scene-film.js','breathing.js','install.js','icons.js','manifest.webmanifest','assets/icon.svg','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/icon-maskable.png','assets/media-manifest.json','assets/scene-v26-provenance.json','素材与授权.md'];
 const scopeURL = path => new URL(path,self.registration.scope).href;
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(SHELL);
@@ -53,5 +53,6 @@ self.addEventListener('fetch',event=>{
   catch{return new Response('连接暂时中断，此素材在本机也没有可用副本。',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});}
  })());
 });
+
 
 

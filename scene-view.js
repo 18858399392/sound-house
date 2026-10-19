@@ -1,11 +1,13 @@
 import { media } from './offline.js';
 import { SceneMotion } from './scene-motion.js';
 import { SceneFilm, sceneFilms, scenePoster } from './scene-film.js';
+import { BreathingGuide } from './breathing.js';
 export class SceneView {
   constructor(stage, onStep, onError) {
     this.stage = stage; this.onStep = onStep; this.onError = onError;
     this.motion = new SceneMotion(stage.querySelector('#atmosphere'));
     this.film = new SceneFilm(stage, onError);
+    this.breathing = new BreathingGuide(stage);
     this.images = [...stage.querySelectorAll('.scene-image')]; this.active = 0; this.token = 0; this.current = null; this.blobs = [];
     let start = null, lastWheel = 0, wheelSum = 0;
     stage.addEventListener('pointerdown', event => {
@@ -55,5 +57,6 @@ export class SceneView {
   weather(scene) {
     this.motion.setScene(scene,this.images[this.active],!!sceneFilms[scene.id]);
     this.film.setScene(scene);
+    this.breathing.setScene(scene);
   }
 }

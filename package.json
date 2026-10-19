@@ -1,15 +1,16 @@
 {
   "name": "sound-house",
-  "version": "2.5.5",
+  "version": "2.6.0",
   "private": true,
   "type": "module",
   "description": "声音小屋：全屏场景、自然混音与离线安装",
   "scripts": {
     "start": "node server.mjs",
-    "check": "node --check immersive-app.js && node --check mixer.js && node --check storage.js && node --check offline.js && node --check scene-view.js && node --check scene-film.js && node --check install.js && node --check icons.js && node --check sw.js && node --check scene-motion.js",
+    "check": "node --check immersive-app.js && node --check mixer.js && node --check storage.js && node --check offline.js && node --check scene-view.js && node --check scene-film.js && node --check breathing.js && node --check install.js && node --check icons.js && node --check sw.js && node --check scene-motion.js",
     "build": "npm run check && node scripts/build.mjs"
   }
 }
+
 
 
 

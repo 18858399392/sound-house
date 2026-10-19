@@ -69,6 +69,10 @@ export class SceneMotion {
     else if(kind==='fire') this.fire(c,t);
     else if(kind==='train') this.train(c,t);
     else if(kind==='bamboo') this.bamboo(c,t);
+    else if(kind==='tv') this.television(c,t);
+    else if(kind==='classroom') this.classroom(c,t);
+    else if(kind==='snow') this.snow(c,t);
+    else if(kind==='meditation') this.meditation(c,t);
     else if(this.scene.weather==='rain') this.rain(c,t,false);
     else this.dust(c,t,32,[.2,.1,.9,.75],'224,225,200');
     c.restore();
@@ -77,6 +81,35 @@ export class SceneMotion {
     c.save(); c.globalAlpha=alpha; c.translate(x*W,y*H); c.scale(rx*W,ry*H);
     const g=c.createRadialGradient(0,0,0,0,0,1);g.addColorStop(0,`rgba(${color},1)`);g.addColorStop(1,`rgba(${color},0)`);
     c.fillStyle=g;c.fillRect(-1,-1,2,2);c.restore();
+  }
+  television(c,t) {
+    // Only the CRT glass and its nearby reflected glow change; no flashing room.
+    c.save();polygon(c,[[.476,.274],[.587,.274],[.588,.399],[.478,.400]]);c.clip();
+    c.fillStyle=`rgba(133,190,232,${.08+Math.sin(t*.65)*.035})`;c.fillRect(.47*W,.27*H,.13*W,.14*H);
+    for(let i=0;i<9;i++){c.fillStyle='rgba(202,226,241,.025)';c.fillRect(.47*W,(.275+i*.014+Math.sin(t*.3)*.002)*H,.13*W,1.2);}
+    c.restore();this.halo(c,.533,.425,.15,.12,'124,173,218',.035+Math.sin(t*.65)*.007);
+  }
+  classroom(c,t) {
+    this.dust(c,t,22,[.17,.24,.69,.73],'255,222,158');
+    this.halo(c,.27,.43,.26,.39,'255,217,151',.022+Math.sin(t*.28)*.004);
+  }
+  snow(c,t) {
+    c.save();c.beginPath();
+    // Three glass panes; flakes never cross the wooden mullions or indoor table.
+    for(const [l,top,r,b]of [[.157,.128,.263,.463],[.281,.128,.648,.552],[.663,.128,.957,.552]])c.rect(l*W,top*H,(r-l)*W,(b-top)*H);
+    c.clip();
+    for(let i=0;i<105;i++){
+      const depth=.3+seed(i+40)*.7,phase=fract(seed(i+200)+t*(.035+depth*.035));
+      const x=(.13+seed(i+80)*.86)*W+Math.sin(t*.35+i)*13+phase*18,y=(.09+phase*.49)*H;
+      c.fillStyle=`rgba(245,249,255,${.25+depth*.5})`;c.beginPath();c.ellipse(x,y,1.1+depth*2.4,1.3+depth*2.9,0,0,TAU);c.fill();
+    }
+    c.restore();
+  }
+  meditation(c,t) {
+    // Low-contrast lake shimmer, leaving the room and mountain silhouettes still.
+    c.save();polygon(c,[[.15,.48],[.91,.48],[.91,.65],[.15,.65]]);c.clip();
+    for(let i=0;i<9;i++){const p=fract(t*.025+i/9);c.strokeStyle=`rgba(248,236,202,${Math.sin(p*Math.PI)*.12})`;c.lineWidth=.7;c.beginPath();c.ellipse((.35+seed(i+3)*.45)*W,(.5+p*.14)*H,(30+p*100),2+p*4,0,0,TAU);c.stroke();}
+    c.restore();
   }
   dust(c,t,count,box,color) {
     const [x,y,right,bottom]=box;
