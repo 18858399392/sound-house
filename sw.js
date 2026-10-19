@@ -1,5 +1,6 @@
-const SHELL = 'sound-house-shell-v2.6.0';
+const SHELL = 'sound-house-shell-v2.6.1';
 const MEDIA = 'sound-house-media-v1';
+const RETIRED_MEDIA = ['assets/sounds/places/tv-voices.mp3', 'assets/sounds/places/teacher-lecture.mp3'];
 const FILES = ['./','index.html','immersive.css','immersive-app.js','data.js','mixer.js','storage.js','offline.js','media-index.js','scene-view.js','scene-motion.js','scene-film.js','breathing.js','install.js','icons.js','manifest.webmanifest','assets/icon.svg','assets/icon-180.png','assets/icon-192.png','assets/icon-512.png','assets/icon-maskable.png','assets/media-manifest.json','assets/scene-v26-provenance.json','素材与授权.md'];
 const scopeURL = path => new URL(path,self.registration.scope).href;
 self.addEventListener('install',event=>event.waitUntil((async()=>{
@@ -16,14 +17,14 @@ self.addEventListener('install',event=>event.waitUntil((async()=>{
    }catch(error){if(attempt===2)throw error;}
   };
   await Promise.all(Array.from({length:4},async()=>{while(nextFile<FILES.length)await installFile(FILES[nextFile++]);}));
-  // Media cache is stable across updates. Only changed media revisions are invalidated.
+  // Preserve downloaded media, invalidating only changed or removed files.
   const oldCaches=(await caches.keys()).filter(k=>k.startsWith('sound-house-shell-')&&k!==SHELL);
   const next=await (await cache.match(scopeURL('assets/media-manifest.json'))).json();let previous=null;
   for(const name of oldCaches){const response=await(await caches.open(name)).match(scopeURL('assets/media-manifest.json'));if(response){previous=await response.json();break;}}
-  if(previous){const old=new Map(previous.files.map(f=>[f.url,f.sha256])),media=await caches.open(MEDIA);for(const file of next.files)if(old.has(file.url)&&old.get(file.url)!==file.sha256)await media.delete(scopeURL(file.url));}
+  if(previous){const revisions=new Map(next.files.map(f=>[f.url,f.sha256])),media=await caches.open(MEDIA);for(const file of previous.files)if(revisions.get(file.url)!==file.sha256)await media.delete(scopeURL(file.url));}
   await self.skipWaiting();
 })()));
-self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key.startsWith('sound-house-shell-')&&key!==SHELL)await caches.delete(key);await self.clients.claim();})()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{const media=await caches.open(MEDIA);for(const request of await media.keys())if(RETIRED_MEDIA.some(path=>new URL(request.url).pathname===new URL(scopeURL(path)).pathname))await media.delete(request);for(const key of await caches.keys())if(key.startsWith('sound-house-shell-')&&key!==SHELL)await caches.delete(key);await self.clients.claim();})()));
 async function rangeResponse(request,response){
  const range=request.headers.get('Range');if(!range)return response;
  const bytes=await response.arrayBuffer(),size=bytes.byteLength,match=/^bytes=(\d*)-(\d*)$/.exec(range);

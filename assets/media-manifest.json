@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-19-v2.6.0",
+  "version": "2026-10-19-v2.6.1",
   "files": [
     {
       "url": "assets/sounds/rain/rain-on-window.mp3",
@@ -350,16 +350,6 @@
       "url": "assets/images/meditation.webp",
       "bytes": 272454,
       "sha256": "33c78cc210aa366da4c0d47a6d8efd7697ca81130edb67882cccbb8e31c76ab4"
-    },
-    {
-      "url": "assets/sounds/places/tv-voices.mp3",
-      "bytes": 1201005,
-      "sha256": "b5a3982974914a733e16788530c66ce436008cbdb53263b29a7ab7a16425815b"
-    },
-    {
-      "url": "assets/sounds/places/teacher-lecture.mp3",
-      "bytes": 1201005,
-      "sha256": "9202788430e5b3cf8ae7474163cc25fa05150167541f53e0ca28dd9c326cd207"
     }
   ]
 }

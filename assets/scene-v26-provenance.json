@@ -42,52 +42,6 @@
       }
     }
   ],
-  "audio": [
-    {
-      "id": "tv-voices",
-      "kind": "Original Chinese text, locally synthesized atmospheric audio; not a recording of a broadcast or a real classroom.",
-      "voice": "Microsoft Huihui Desktop",
-      "text": [
-        "夜色渐渐深了，街边的小店也亮起了灯。欢迎来到今晚的城市漫游。今天的镜头，从一条安静的小街开始。",
-        "街角有一家开了很多年的小店。木门被轻轻推开，柜台后面的人抬起头，笑着说，回来啦。熟悉的声音，在晚风里慢慢散开。",
-        "沿着街道往前走，可以看见一座小桥。桥下的水流得很慢，两岸的灯影，落在水面上。白天热闹的街巷，到了晚上，也有了自己的安静。",
-        "有的人家刚刚吃过晚饭，桌上的碗筷还没有收。有人在窗边整理旧相册，一页一页，翻过从前的日子。电视里的故事，还在不紧不慢地讲着。",
-        "再往前，是一片靠山的村庄。傍晚的时候，最后一辆小巴停在路边。提着布袋的人走下车，沿着熟悉的石阶，往家的方向走去。",
-        "这里的春天，有很长的黄昏。院子里的树，慢慢长出了新叶。老人搬一把椅子坐在门口，看远处的山，也看街坊们来来往往。",
-        "有时候，一天里最让人记得的，不过是一碗热汤，一句普通的问候，或是一盏一直亮着的灯。那些平常的时刻，连起来，就是我们熟悉的生活。",
-        "镜头转向小城外的田野。风从田埂上经过，远处传来晚归的脚步声。天边的云，渐渐收起最后一点颜色。家家户户的窗前，留下柔和的灯光。",
-        "今晚的漫游，先在这里停一停。明天，我们还会沿着这条小路，去看看新的风景。屋里的灯还亮着，熟悉的声音，仍在轻轻地讲述。"
-      ],
-      "processing": "highpass=f=180,lowpass=f=1900,aecho=0.8:0.72:42|91:0.13|0.08,volume=0.5, mono 32kHz/80kbps MP3, up to120s",
-      "file": {
-        "url": "assets/sounds/places/tv-voices.mp3",
-        "bytes": 1201005,
-        "sha256": "b5a3982974914a733e16788530c66ce436008cbdb53263b29a7ab7a16425815b"
-      }
-    },
-    {
-      "id": "teacher-lecture",
-      "kind": "Original Chinese text, locally synthesized atmospheric audio; not a recording of a broadcast or a real classroom.",
-      "voice": "Microsoft Kangkang",
-      "text": [
-        "同学们，我们接着来看今天这一节。先不用急着写答案，大家想一想，一块木头放进水里，为什么常常会浮在水面上。",
-        "我们把物体放进水里，水会对它产生一个向上的力。这个向上的力，就叫作浮力。观察的时候，可以先看物体的位置，再想一想，它受到哪些力。",
-        "大家看黑板。重力的方向是竖直向下，浮力的方向是竖直向上。我们把这两个方向画清楚，分析起来，就会容易一些。",
-        "如果物体静止地漂在水面上，说明它在竖直方向上受到的力是平衡的。所以这时，浮力的大小，和物体受到的重力相等。",
-        "这里要注意，漂浮和悬浮不完全一样。漂浮的物体，有一部分露在水面上。悬浮的物体，浸没在液体里。它们都可以保持静止，但位置不同。",
-        "我们再换一个角度来想。当一只空的小碗放在水面上，它排开了一部分水。往碗里面慢慢加水，碗会下沉一点，排开水的体积，也随之增大。",
-        "这个实验不需要很复杂的器材。一盆水，一个小容器，就可以观察到。做实验时，动作慢一点，注意前后两次水面的位置，有没有发生变化。",
-        "下面这一段，大家可以在笔记本上整理一下。第一，找出研究的物体。第二，判断它处在什么状态。第三，把受到的力和方向写清楚。",
-        "不要只记一个结论。我们更需要知道，这个结论是在什么条件下得到的。条件变了，分析的方法还可以用，但具体的结果，需要重新判断。",
-        "好，大家先把这道例题看一看。可以从受力分析开始，想好以后，再慢慢写出自己的过程。窗边的同学，也可以看看演示桌上这个小实验。"
-      ],
-      "processing": "highpass=f=160,lowpass=f=2200,aecho=0.8:0.7:58|117:0.16|0.09,volume=0.55, mono 32kHz/80kbps MP3, up to120s",
-      "file": {
-        "url": "assets/sounds/places/teacher-lecture.mp3",
-        "bytes": 1201005,
-        "sha256": "9202788430e5b3cf8ae7474163cc25fa05150167541f53e0ca28dd9c326cd207"
-      }
-    }
-  ],
-  "reference": "Tide only informed the calm ambience and breathing direction. No Tide artwork, scripts or audio is used."
+  "reference": "Tide only informed the calm ambience and breathing direction. No Tide artwork, scripts or audio is used.",
+  "audioNote": "V2.6.1：电视使用原有粉噪音、风扇与唱片底噪，课堂仅使用白噪音。已删除合成人声，不新增音频素材。原有声音来源见 sound-provenance.json。"
 }

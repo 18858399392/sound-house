@@ -5,7 +5,16 @@ const plain = x => x && typeof x === 'object' && !Array.isArray(x);
 const sceneId = id => id === 'train' ? 'tv' : sceneById.has(id) ? id : 'rain';
 export function cleanMix(value) {
   if (!plain(value)) return {};
-  return Object.fromEntries(Object.entries(value).filter(([id, volume]) => soundById.has(id) && typeof volume === 'number' && Number.isFinite(volume) && volume >= 0 && volume <= 1).slice(0, 8));
+  // Retire spoken presets and migrate saved/shared recipes to existing noise.
+  const matches = preset => Object.keys(value).length === Object.keys(preset).length && Object.entries(preset).every(([id, volume]) => value[id] === volume);
+  if (matches({ 'teacher-lecture': .54, 'ceiling-fan': .1, paper: .08 })) return { ...sceneById.get('classroom').mix };
+  if (matches({ 'tv-voices': .58, 'ceiling-fan': .12, 'vinyl-effect': .06 })) return { ...sceneById.get('tv').mix };
+  const mix = Object.fromEntries(Object.entries(value).filter(([id, volume]) => soundById.has(id) && typeof volume === 'number' && Number.isFinite(volume) && volume >= 0 && volume <= 1).slice(0, 8));
+  for (const [removed, replacement] of [['teacher-lecture', 'white-noise'], ['tv-voices', 'pink-noise']]) {
+    const volume = value[removed];
+    if (!(replacement in mix) && typeof volume === 'number' && Number.isFinite(volume) && volume >= 0 && volume <= 1 && Object.keys(mix).length < 8) mix[replacement] = Math.min(volume, .35);
+  }
+  return mix;
 }
 export function cleanRecipe(value) {
   if (!plain(value)) return null;
